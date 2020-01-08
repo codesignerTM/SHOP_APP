@@ -5,6 +5,7 @@ import { useSelector, useDispatch } from "react-redux";
 import Colors from "../../constants/Colors";
 import CartItem from "../../components/shop/CartItem";
 import * as cartActions from "../../store/actions/cart";
+import * as ordersActions from "../../store/actions/orders";
 
 const CartScreen = props => {
   const totalAmount = useSelector(state => state.cartItems.totalAMount);
@@ -42,6 +43,9 @@ const CartScreen = props => {
           title="Order now"
           color={Colors.secondary}
           disabled={cartItems.length === 0}
+          onPress={() => {
+            dispatch(ordersActions.addOrder(cartItems, totalAmount));
+          }}
         />
       </View>
       <FlatList
@@ -60,6 +64,10 @@ const CartScreen = props => {
       />
     </View>
   );
+};
+
+CartScreen.navigationOptions = {
+  headerTitle: "Your Cart"
 };
 
 const styles = StyleSheet.create({
