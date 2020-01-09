@@ -1,5 +1,5 @@
 import React from "react";
-import { Text, FlatList, StyleSheet, Platform } from "react-native";
+import { FlatList } from "react-native";
 import { useSelector } from "react-redux";
 import CustomHeaderButton from "../../components/UI/HeaderButton";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
@@ -16,6 +16,7 @@ const OrdersScreen = props => {
         <OrderItem
           amount={itemData.item.totalAmount}
           date={itemData.item.readAbleDate}
+          items={itemData.item.items}
         />
       )}
     />
@@ -38,7 +39,5 @@ OrdersScreen.navigationOptions = navData => {
     )
   };
 };
-
-const styles = StyleSheet.create({});
 
 export default OrdersScreen;

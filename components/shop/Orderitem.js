@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,13 +12,33 @@ import CartItem from "./CartItem";
 import COlors from "../../constants/Colors";
 
 const OrderItem = props => {
+  const [showDetails, setShowDetails] = useState(false);
+
   return (
     <View style={styles.orderItem}>
       <View style={styles.summary}>
         <Text style={styles.totalAmount}>£ {props.amount.toFixed(2)}</Text>
         <Text style={styles.date}>{props.date}</Text>
       </View>
-      <Button color={COlors.primray} title="Show details" />
+      <Button
+        color={COlors.primray}
+        title={showDetails ? "Hide details " : "Show details"}
+        onPress={() => {
+          setShowDetails(prevState => !prevState);
+        }}
+      />
+      {showDetails && (
+        <View style={styles.details}>
+          {props.items.map(cartItem => (
+            <CartItem
+              key={cartItem.productId}
+              quantity={cartItem.quantity}
+              amount={cartItem.sum}
+              title={cartItem.productTitle}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 };
@@ -51,6 +71,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "open-sans",
     color: "#888"
+  },
+  details: {
+    width: "100%"
   }
 });
 
