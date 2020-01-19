@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Button,
   FlatList,
@@ -19,17 +19,34 @@ import Colors from "../../constants/Colors";
 
 const ProductsOverViewScreen = props => {
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState();
   const products = useSelector(state => state.products.availableProducts);
   const dispatch = useDispatch();
 
-  useEffect(() => {
-    const loadProducts = async () => {
-      setIsLoading(true);
+  const loadProducts = useCallback(async () => {
+    setError(null);
+    setIsLoading(true);
+    try {
       await dispatch(productAction.fetchProducts());
-      setIsLoading(false);
-    };
+    } catch (error) {
+      setError(error.message);
+    }
+    setIsLoading(false);
+  }, [dispatch, setIsLoading, setError]);
+
+  useEffect(() => {
     loadProducts();
-  }, [dispatch]);
+  }, [dispatch, loadProducts]);
+
+  useEffect(() => {
+    const willFocusSub = props.navigation.addListener(
+      "willFocus",
+      loadProducts
+    );
+    return () => {
+      willFocusSub.remove();
+    };
+  }, [loadProducts]);
 
   const selectItemHandler = (id, title) => {
     props.navigation.navigate("ProductDetail", {
@@ -37,6 +54,19 @@ const ProductsOverViewScreen = props => {
       productTitle: title
     });
   };
+
+  if (error) {
+    return (
+      <View style={styles.spinner}>
+        <Text> An error occured! </Text>
+        <Button
+          title="Try again"
+          onPress={loadProducts}
+          color={Colors.primray}
+        />
+      </View>
+    );
+  }
 
   if (isLoading) {
     return (
