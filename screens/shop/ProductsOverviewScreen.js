@@ -1,5 +1,13 @@
-import React, { useEffect } from "react";
-import { Button, FlatList, StyleSheet, Platform } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  Button,
+  FlatList,
+  Text,
+  StyleSheet,
+  Platform,
+  ActivityIndicator,
+  View
+} from "react-native";
 import { useSelector, useDispatch } from "react-redux";
 import { HeaderButtons, Item } from "react-navigation-header-buttons";
 
@@ -10,11 +18,17 @@ import CustomHeaderButton from "../../components/UI/HeaderButton";
 import Colors from "../../constants/Colors";
 
 const ProductsOverViewScreen = props => {
+  const [isLoading, setIsLoading] = useState(false);
   const products = useSelector(state => state.products.availableProducts);
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(productAction.fetchProducts());
+    const loadProducts = async () => {
+      setIsLoading(true);
+      await dispatch(productAction.fetchProducts());
+      setIsLoading(false);
+    };
+    loadProducts();
   }, [dispatch]);
 
   const selectItemHandler = (id, title) => {
@@ -23,6 +37,22 @@ const ProductsOverViewScreen = props => {
       productTitle: title
     });
   };
+
+  if (isLoading) {
+    return (
+      <View style={styles.spinner}>
+        <ActivityIndicator size="large" color={Colors.primray} />
+      </View>
+    );
+  }
+
+  if (!isLoading && products.length === 0) {
+    return (
+      <View style={styles.spinner}>
+        <Text>No products found! Maybe start adding some!</Text>
+      </View>
+    );
+  }
 
   return (
     <FlatList
@@ -86,6 +116,12 @@ ProductsOverViewScreen.navigationOptions = navData => {
   };
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  spinner: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center"
+  }
+});
 
 export default ProductsOverViewScreen;
