@@ -15,3 +15,5 @@ web-report/
 
 yarn.lock
 yarn-error.log
+
+.env
