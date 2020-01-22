@@ -1,19 +1,10 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Platform,
-  Button
-} from "react-native";
-import { Ionicons } from "@expo/vector-icons";
+import { View, Text, StyleSheet, Button } from "react-native";
 import CartItem from "./CartItem";
 import COlors from "../../constants/Colors";
 
 const OrderItem = props => {
   const [showDetails, setShowDetails] = useState(false);
-
   return (
     <View style={styles.orderItem}>
       <View style={styles.summary}>

@@ -1,4 +1,5 @@
 import { FIREBASE_CONNECTION_URL } from "react-native-dotenv";
+import Order from "../../models/order.model";
 
 export const ADD_ORDER = "ADD_ORDER";
 export const FETCH_ORDERS = "FETCH_ORDERS";
@@ -35,5 +36,34 @@ export const addOrder = (cartItems, totalAmount) => {
         date: date
       }
     });
+  };
+};
+
+export const fetchOrder = () => {
+  return async dispatch => {
+    try {
+      const response = await fetch(FIREBASE_CONNECTION_URL + "orders/u1.json");
+      const resData = await response.json();
+      const loadedOrders = [];
+
+      if (!response.ok) {
+        throw new Error("Something went wrong");
+      }
+      console.log();
+      for (const key in resData) {
+        loadedOrders.push(
+          new Order(
+            key,
+            resData[key].cartItems,
+            resData[key].totalAmount,
+            new Date(resData[key].date)
+          )
+        );
+      }
+      console.log("loadedOrders", loadedOrders);
+      dispatch({ type: FETCH_ORDERS, orders: loadedOrders });
+    } catch (error) {
+      throw error;
+    }
   };
 };
