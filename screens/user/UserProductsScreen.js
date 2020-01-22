@@ -10,7 +10,6 @@ import * as UserActions from "../../store/actions/products";
 
 const UserProductsScreen = props => {
   const userProducts = useSelector(state => state.products.userProducts);
-  console.log("userProducts", userProducts);
   const dispatch = useDispatch();
 
   const editPorductHandler = id => {

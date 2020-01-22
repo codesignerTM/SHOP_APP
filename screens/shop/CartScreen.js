@@ -28,8 +28,6 @@ const CartScreen = props => {
 
   const dispatch = useDispatch();
 
-  console.log("cartItems", cartItems);
-  console.log("totalAmount", totalAmount);
   return (
     <View style={styles.screen}>
       <View style={styles.summary}>

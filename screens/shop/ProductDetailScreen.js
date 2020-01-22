@@ -20,7 +20,6 @@ const ProductDetailsScreen = props => {
   );
   const dispatch = useDispatch();
 
-  console.log("selectedProduct", selectedProduct);
   return (
     <ScrollView>
       <Image source={{ uri: selectedProduct.imageUrl }} style={styles.image} />
