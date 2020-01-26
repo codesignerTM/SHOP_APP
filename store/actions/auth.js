@@ -22,9 +22,22 @@ export const signUp = (email, password) => {
           })
         }
       );
-      const resData = await response.json();
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        const errorId = errorResponse.error.message;
+        console.log("errorResponse", errorResponse);
+        let message = "Something went wring!";
 
-      console.log("resData signup", resData);
+        if (errorId === "EMAIL_EXISTS") {
+          message = "This email exists, please log in!";
+        } else if (errorId === "OPERATION_NOT_ALLOWED") {
+          message = "This operation is not allowed!";
+        } else if (errorId === "TOO_MANY_ATTEMPTS_TRY_LATER") {
+          message = "You tried too many times! Please come back later!";
+        }
+        throw new Error(message);
+      }
+      const resData = await response.json();
     } catch (error) {
       console.log("error signup", error);
       throw error;
@@ -32,6 +45,7 @@ export const signUp = (email, password) => {
     dispatch({ type: SIGN_UP });
   };
 };
+
 export const signOut = () => {
   return {};
 };
@@ -54,12 +68,23 @@ export const logIn = (email, password) => {
           })
         }
       );
-      const resData = await response.json();
+      if (!response.ok) {
+        const errorResponse = await response.json();
+        const errorId = errorResponse.error.message;
 
-      console.log("resData login", resData);
+        let message = "Something went wring!";
+
+        if (errorId === "EMAIL_NOT_FOUND") {
+          message = "This email could not be found!";
+        } else if (errorId === "INVALID_PASSWORD") {
+          message = "This password is not valid!";
+        }
+        throw new Error(message);
+      }
+      const resData = await response.json();
     } catch (error) {
       console.log("error login", error);
-      throw error;
+      throw new Error(error);
     }
     dispatch({ type: LOG_IN });
   };
