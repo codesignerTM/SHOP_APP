@@ -6,21 +6,25 @@ export const FETCH_ORDERS = "FETCH_ORDERS";
 
 export const addOrder = (cartItems, totalAmount) => {
   const date = new Date();
-  return async dispatch => {
-    const response = await fetch(FIREBASE_CONNECTION_URL + "orders/u1.json", {
-      method: "POST",
-      header: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        cartItems,
-        totalAmount,
-        date: date //new Date().toISOString()
-          .toJSON()
-          .slice(0, 10)
-          .replace(/-/g, "/")
-      })
-    });
+  return async (dispatch, getState) => {
+    const token = getState().authentication.token;
+    const response = await fetch(
+      FIREBASE_CONNECTION_URL + `orders/u1.json?auth=${token}`,
+      {
+        method: "POST",
+        header: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          cartItems,
+          totalAmount,
+          date: date //new Date().toISOString()
+            .toJSON()
+            .slice(0, 10)
+            .replace(/-/g, "/")
+        })
+      }
+    );
     const resData = await response.json();
 
     if (!response.ok) {

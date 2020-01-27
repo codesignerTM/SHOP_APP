@@ -38,9 +38,10 @@ export const fetchProducts = () => {
 };
 
 export const deleteProduct = productId => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const token = getState().authentication.token;
     const response = await fetch(
-      FIREBASE_CONNECTION_URL + `products/${productId}.json`,
+      FIREBASE_CONNECTION_URL + `products/${productId}.json?auth=${token}`,
       {
         method: "DELETE"
       }
@@ -58,19 +59,23 @@ export const deleteProduct = productId => {
 };
 
 export const createProduct = (title, description, imageUrl, price) => {
-  return async dispatch => {
-    const response = await fetch(FIREBASE_CONNECTION_URL + "products.json", {
-      method: "POST",
-      header: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title,
-        description,
-        imageUrl,
-        price
-      })
-    });
+  return async (dispatch, getState) => {
+    const token = getState().authentication.token;
+    const response = await fetch(
+      FIREBASE_CONNECTION_URL + `products.json?auth=${token}`,
+      {
+        method: "POST",
+        header: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          imageUrl,
+          price
+        })
+      }
+    );
     const resData = await response.json();
     dispatch({
       type: CREATE_PRODUCT,
@@ -86,9 +91,10 @@ export const createProduct = (title, description, imageUrl, price) => {
 };
 
 export const updateProduct = (id, title, description, imageUrl) => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const token = getState().authentication.token;
     const response = await fetch(
-      FIREBASE_CONNECTION_URL + `products/${id}.json`,
+      FIREBASE_CONNECTION_URL + `products/${id}.json?auth=${token}`,
       {
         method: "PATCH",
         header: {
