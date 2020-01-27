@@ -58,7 +58,7 @@ export const signUp = (email, password) => {
 };
 
 export const signOut = () => {
-  return {};
+  return { type: SIGN_OUT };
 };
 
 export const logIn = (email, password) => {
