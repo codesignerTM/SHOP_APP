@@ -71,10 +71,11 @@ const AuthScreen = props => {
 
     try {
       await dispatch(action);
+      props.navigation.navigate("Shop");
     } catch (error) {
       setError(error);
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   const [formState, dispatchFormState] = useReducer(formReducer, {
