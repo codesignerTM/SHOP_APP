@@ -8,8 +8,9 @@ export const addOrder = (cartItems, totalAmount) => {
   const date = new Date();
   return async (dispatch, getState) => {
     const token = getState().authentication.token;
+    const userId = getState().authentication.userId;
     const response = await fetch(
-      FIREBASE_CONNECTION_URL + `orders/u1.json?auth=${token}`,
+      FIREBASE_CONNECTION_URL + `orders/${userId}.json?auth=${token}`,
       {
         method: "POST",
         header: {
@@ -44,9 +45,12 @@ export const addOrder = (cartItems, totalAmount) => {
 };
 
 export const fetchOrder = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const userId = getState().authentication.userId;
     try {
-      const response = await fetch(FIREBASE_CONNECTION_URL + "orders/u1.json");
+      const response = await fetch(
+        FIREBASE_CONNECTION_URL + `orders/${userId}.json`
+      );
       const resData = await response.json();
       const loadedOrders = [];
 

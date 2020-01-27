@@ -7,7 +7,9 @@ export const UPDATE_PRODUCT = "UPDATE_PRODUCT";
 export const SET_PRODUCTS = "SET_PRODUCTS";
 
 export const fetchProducts = () => {
-  return async dispatch => {
+  return async (dispatch, getState) => {
+    const userId = getState().authentication.userId;
+
     try {
       const response = await fetch(FIREBASE_CONNECTION_URL + "products.json");
       const resData = await response.json();
@@ -21,7 +23,7 @@ export const fetchProducts = () => {
         loadedProducts.push(
           new Product(
             key,
-            "u1",
+            resData[key].ownerId,
             resData[key].title,
             resData[key].imageUrl,
             resData[key].description,
@@ -29,7 +31,11 @@ export const fetchProducts = () => {
           )
         );
       }
-      dispatch({ type: SET_PRODUCTS, products: loadedProducts });
+      dispatch({
+        type: SET_PRODUCTS,
+        products: loadedProducts,
+        userProducts: loadedProducts.filter(prod => prod.ownerId === userId)
+      });
     } catch (error) {
       console.log("error", error);
       throw error;
@@ -61,6 +67,7 @@ export const deleteProduct = productId => {
 export const createProduct = (title, description, imageUrl, price) => {
   return async (dispatch, getState) => {
     const token = getState().authentication.token;
+    const userId = getState().authentication.userId;
     const response = await fetch(
       FIREBASE_CONNECTION_URL + `products.json?auth=${token}`,
       {
@@ -72,7 +79,8 @@ export const createProduct = (title, description, imageUrl, price) => {
           title,
           description,
           imageUrl,
-          price
+          price,
+          ownerId: userId
         })
       }
     );
@@ -84,7 +92,8 @@ export const createProduct = (title, description, imageUrl, price) => {
         title,
         description,
         imageUrl,
-        price
+        price,
+        ownerId: userId
       }
     });
   };
