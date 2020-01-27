@@ -1,9 +1,14 @@
 import { FIREBASE_WEB_API_KEY } from "react-native-dotenv";
 import { AsyncStorage } from "react-native";
 
-export const SIGN_UP = "SIGN_UP";
+/* export const SIGN_UP = "SIGN_UP";
+export const LOG_IN = "LOG_IN"; */
 export const SIGN_OUT = "SIGN_OUT";
-export const LOG_IN = "LOG_IN";
+export const AUTHENTICATE = "AUTHENTICATE";
+
+export const authenticate = (userId, token) => {
+  return { type: AUTHENTICATE, userId: userId, token: token };
+};
 
 export const signUp = (email, password) => {
   return async dispatch => {
@@ -43,11 +48,8 @@ export const signUp = (email, password) => {
       console.log("error signup", error);
       throw error;
     }
-    dispatch({
-      type: SIGN_UP,
-      token: resData.idToken,
-      userId: resData.localId
-    });
+    dispatch(authenticate(resData.localId, resData.idToken));
+
     const expirationDate = new Date(
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
@@ -91,11 +93,8 @@ export const logIn = (email, password) => {
     }
     let resData = await response.json();
     console.log("resData", resData);
-    dispatch({
-      type: LOG_IN,
-      token: resData.idToken,
-      userId: resData.localId
-    });
+    dispatch(authenticate(resData.localId, resData.idToken));
+
     const expirationDate = new Date(
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
