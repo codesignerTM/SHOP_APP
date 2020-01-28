@@ -6,8 +6,13 @@ export const LOG_IN = "LOG_IN"; */
 export const SIGN_OUT = "SIGN_OUT";
 export const AUTHENTICATE = "AUTHENTICATE";
 
-export const authenticate = (userId, token) => {
-  return { type: AUTHENTICATE, userId: userId, token: token };
+let timer;
+
+export const authenticate = (userId, token, expiryTime) => {
+  return dispatch => {
+    dispatch(setLogoutTimer(expiryTime));
+    dispatch({ type: AUTHENTICATE, userId: userId, token: token });
+  };
 };
 
 export const signUp = (email, password) => {
@@ -48,17 +53,19 @@ export const signUp = (email, password) => {
       console.log("error signup", error);
       throw error;
     }
-    dispatch(authenticate(resData.localId, resData.idToken));
+    dispatch(
+      authenticate(
+        resData.localId,
+        resData.idToken,
+        parseInt(resData.expiresIn) * 1000
+      )
+    );
 
     const expirationDate = new Date(
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
     saveDataToStorage(resData.idToken, resData.localId, expirationDate);
   };
-};
-
-export const signOut = () => {
-  return { type: SIGN_OUT };
 };
 
 export const logIn = (email, password) => {
@@ -93,12 +100,38 @@ export const logIn = (email, password) => {
     }
     let resData = await response.json();
     console.log("resData", resData);
-    dispatch(authenticate(resData.localId, resData.idToken));
+    dispatch(
+      authenticate(
+        resData.localId,
+        resData.idToken,
+        parseInt(resData.expiresIn) * 1000
+      )
+    );
 
     const expirationDate = new Date(
       new Date().getTime() + parseInt(resData.expiresIn) * 1000
     );
     saveDataToStorage(resData.idToken, resData.localId, expirationDate);
+  };
+};
+
+export const signOut = () => {
+  clearLogoutTimer();
+  AsyncStorage.removeItem("userData");
+  return { type: SIGN_OUT };
+};
+
+const clearLogoutTimer = () => {
+  if (timer) {
+    clearTimeout(timer);
+  }
+};
+
+const setLogoutTimer = expirationTime => {
+  return dispatch => {
+    timer = setTimeout(() => {
+      dispatch(signOut());
+    }, expirationTime);
   };
 };
 
